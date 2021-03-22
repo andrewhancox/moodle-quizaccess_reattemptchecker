@@ -43,8 +43,8 @@ class quizaccess_reattemptchecker extends quiz_access_rule_base {
     public static function add_settings_form_fields(
             mod_quiz_mod_form $quizform, MoodleQuickForm $mform) {
 
-        $mform->addElement('text', 'reattemptchecker', get_string("preventpassed", "quizaccess_reattemptchecker"), 'maxlength="3" size="3"');
-        $mform->setType('reattemptchecker', PARAM_INT);
+        $mform->addElement('text', 'reattemptchecker', get_string("preventpassed", "quizaccess_reattemptchecker"), 'maxlength="8" size="5"');
+        $mform->setType('reattemptchecker', PARAM_FLOAT);
         $mform->addHelpButton('reattemptchecker',
                 'preventpassed', 'quizaccess_reattemptchecker');
     }
@@ -85,16 +85,10 @@ class quizaccess_reattemptchecker extends quiz_access_rule_base {
                 "quiz = :quizid AND userid = :userid AND timefinish > 0 and preview != 1",
                 array('quizid' => $this->quiz->id, 'userid' => $lastattempt->userid));
 
-        if (quiz_rescale_grade(quiz_calculate_best_grade($this->quiz, $previousattempts), $this->quiz, false)
-                >= $this->quiz->reattemptchecker) {
+        if (quiz_calculate_best_grade($this->quiz, $previousattempts) >= $this->quiz->reattemptchecker) {
             return get_string('accessprevented', 'quizaccess_reattemptchecker');
         }
 
         return false;
-    }
-
-    public static function delete_settings($quiz) {
-        global $DB;
-        $DB->delete_records('quizaccess_reattemptchecker', array('quizid' => $quiz->id));
     }
 }
